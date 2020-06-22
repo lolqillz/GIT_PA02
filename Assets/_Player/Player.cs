@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -12,14 +13,18 @@ public class Player : MonoBehaviour
     private Vector3 MoveDirection = Vector3.zero;
     private Transform playerMesh = null;
     private Animator thisAnimator = null;
+    private Animator explode;
 
     private float moveSpeed = 0.05f;
 
+    public GameObject explosionobject;
+    
     void Start()
     {
         thisController = GetComponent<CharacterController>();
         thisAnimator = GetComponentInChildren<Animator>();
         playerMesh = transform.GetChild(0);
+        explode = GetComponent<Animator>();
     }
 
     void Update()
@@ -54,4 +59,24 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, -1.5f, 1.5f), transform.position.y, transform.position.z);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag.Equals("Score"))
+        {
+            GameObject.Find("Prefab_UI").GetComponent<GameManager>().AddScore();
+        }
+
+        else if (other.gameObject.tag.Equals("Obstacle"))
+        {
+            GameObject explosion = Instantiate(explosionobject, transform.position,transform.rotation);
+            Destroy(explosion, 1.0f);
+            GameManager.Lives--;
+            GameObject.Find("Prefab_UI").GetComponent<GameManager>().UpdateLives();
+            if (GameManager.Lives <= 0)
+            {
+                PlayerPrefs.SetInt("ShowScore", GameManager.Score);
+                SceneManager.LoadScene("GameOverScene");
+            }
+        }
+    }
 }

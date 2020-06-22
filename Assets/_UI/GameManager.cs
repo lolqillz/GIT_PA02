@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public enum GameState {  GameOver, GameStart, GameIdle};
     public static GameState CurrentState = GameState.GameIdle;
 
-    public static int Lives = 3;
+    public static int Lives = 0;
     public static int Score = 0;
+
+    private int updatedscore;
 
     void Start()
     {
@@ -32,5 +35,21 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene(0);
         }
+    }
+
+    public void AddScore()
+    {
+        Score++;
+        HUD.HUDManager.UpdateScore();
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    public void UpdateLives()
+    {
+        HUD.HUDManager.UpdateLives();
     }
 }
